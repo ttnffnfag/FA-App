@@ -246,7 +246,7 @@ button{
 
 <button class="btn1" onclick="gen()">產生回報</button>
 <button class="btn2" onclick="copy()">複製內容</button>
-<button class="btn2" onclick="upload()">上傳 Google Sheet</button>
+<button id="uploadBtn" class="btn2" onclick="upload()">上傳 Google Sheet</button>
 <button class="btn3" onclick="location.reload()">清空</button>
 
 <pre class="output" id="out"></pre>
@@ -445,42 +445,75 @@ alert("已複製");
 // ===== 上傳 =====
 async function upload(){
 
-gen();
+const btn = document.getElementById("uploadBtn");
 
-if(document.getElementById("out").innerText==="") return;
+// 🔒 防重複點擊
+btn.disabled = true;
+btn.innerText = "上傳中...";
+
+try{
+
+gen(); // 先產生內容
+
+if(!out.innerText){
+    throw new Error("無資料");
+}
 
 let data={
+
 location:getValue("location"),
 customer:getValue("customer"),
 factory:getValue("factory"),
 model:getValue("model"),
+
 eqInternal:eqInternal.value,
 eqCustomer:eqCustomer.value,
+
 date:date.value,
 time:time.value,
+
 person:person.value,
 reportPerson:reportPerson.value,
+
 type:type.value,
 desc:desc.value,
+
 rep:document.querySelector('input[name="rep"]:checked')?.value || "",
 repType:repType.value,
 repDetail:repDetail.value,
+
 updType:updType.value,
 dynText:dynText.value,
-cross:document.getElementById("cross").value,
+
+cross:cross.value==="YES" ? "可以" : "不可以",
 crossDetail:crossDetail.value
+
 };
 
-try{
-await fetch(API_URL,{
+let res = await fetch(API_URL,{
 method:"POST",
 body:JSON.stringify(data)
 });
-alert("上傳成功");
-}catch(e){
-alert("上傳失敗");
-console.log(e);
+
+if(!res.ok){
+    throw new Error("上傳失敗");
 }
+
+alert("上傳成功");
+
+}catch(err){
+
+console.log(err);
+alert("上傳失敗");
+
+}finally{
+
+// 🔓 一定要解鎖（成功或失敗都會執行）
+btn.disabled = false;
+btn.innerText = "上傳 Google Sheet";
+
+}
+
 }
 
 // init
