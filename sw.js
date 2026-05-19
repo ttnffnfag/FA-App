@@ -2,7 +2,7 @@ self.addEventListener("install", e=>{
 e.waitUntil(
 caches.open("fa-cache").then(cache=>{
 return cache.addAll([
-"app.html",
+"index.html",
 "manifest.json",
 "icon.png"
 ]);
