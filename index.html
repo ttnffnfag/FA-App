@@ -95,59 +95,41 @@ button{
 <!-- 地點 -->
 <div class="card">
 <label>地點</label>
-<select id="location">
-<option value="">請選擇</option>
-<option>中壢</option>
-<option>龍潭</option>
-<option>竹南</option>
-<option>台中</option>
-<option>嘉義</option>
-<option>台南</option>
-<option>高雄</option>
-</select>
+<input id="location" list="locationList" placeholder="請選或輸入">
+<datalist id="locationList">
+<option value="中壢"><option value="龍潭"><option value="竹南">
+<option value="台中"><option value="嘉義"><option value="台南"><option value="高雄">
+</datalist>
 </div>
 
 <!-- 客戶 -->
 <div class="card">
 <label>客戶</label>
-<select id="customer">
-<option value="">請選擇</option>
-<option>台積電</option>
-<option>日月光</option>
-<option>矽品</option>
-<option>力成</option>
-<option>美光</option>
-<option>精材</option>
-</select>
+<input id="customer" list="customerList" placeholder="請選或輸入">
+<datalist id="customerList">
+<option value="台積電"><option value="日月光"><option value="矽品">
+<option value="力成"><option value="美光"><option value="精材">
+</datalist>
 </div>
 
 <!-- 廠區 -->
 <div class="card">
 <label>廠區</label>
-<select id="factory">
-<option value="">請選擇</option>
-<option>AP2</option>
-<option>AP5</option>
-<option>AP6</option>
-<option>K18</option>
-</select>
+<input id="factory" list="factoryList" placeholder="請選或輸入">
+<datalist id="factoryList">
+<option value="AP2"><option value="AP5"><option value="AP6"><option value="K18">
+</datalist>
 </div>
 
 <!-- 機型 -->
 <div class="card">
 <label>機型</label>
-<select id="model">
-<option value="">請選擇</option>
-<option>SC103</option>
-<option>SC104</option>
-<option>SC106</option>
-<option>SC106F</option>
-<option>SC106FV</option>
-<option>SC107</option>
-<option>SC201</option>
-<option>SC202</option>
-<option>SC4200</option>
-</select>
+<input id="model" list="modelList" placeholder="請選或輸入">
+<datalist id="modelList">
+<option value="SC103"><option value="SC104"><option value="SC106">
+<option value="SC106F"><option value="SC106FV"><option value="SC107">
+<option value="SC201"><option value="SC202"><option value="SC4200">
+</datalist>
 </div>
 
 <!-- 設備 -->
@@ -187,11 +169,10 @@ button{
 <!-- 異常 -->
 <div class="card">
 <label>異常原因</label>
-<select id="type">
-<option value="">請選擇</option>
-<option>硬體</option>
-<option>軟體</option>
-</select>
+<input id="type" list="typeList" placeholder="請選或輸入">
+<datalist id="typeList">
+<option value="硬體"><option value="軟體">
+</datalist>
 </div>
 
 <div class="card">
@@ -210,16 +191,12 @@ button{
 </div>
 
 <label>再現狀態</label>
-<select id="repType">
-<option value="">請選擇</option>
-<option>開機</option>
-<option>運轉中</option>
-<option>待機</option>
-<option>Recipe切換</option>
-<option>上下料</option>
-<option>Alarm Reset後</option>
-<option>長時間運轉</option>
-</select>
+<input id="repType" list="repList" placeholder="請選或輸入">
+<datalist id="repList">
+<option value="開機"><option value="運轉中"><option value="待機">
+<option value="Recipe切換"><option value="上下料">
+<option value="Alarm Reset後"><option value="長時間運轉">
+</datalist>
 
 <textarea id="repDetail" placeholder="補充資訊"></textarea>
 
@@ -236,20 +213,12 @@ button{
 </div>
 
 <label>更新類型</label>
-<select id="updType" onchange="updateTypeUI()">
-<option value="">請選擇</option>
-<option>PLC</option>
-<option>PC軟體</option>
-<option>Recipe</option>
-<option>參數</option>
-<option>Sensor更換</option>
-<option>Valve更換</option>
-<option>機構</option>
-<option>管路</option>
-<option>電控</option>
-<option>電氣元件</option>
-<option>其他</option>
-</select>
+<input id="updType" list="updList" onchange="updateTypeUI()" placeholder="請選或輸入">
+<datalist id="updList">
+<option value="PLC"><option value="PC軟體"><option value="Recipe">
+<option value="參數"><option value="Sensor更換"><option value="Valve更換">
+<option value="機構"><option value="管路"><option value="電控"><option value="電氣元件"><option value="其他">
+</datalist>
 
 <div class="card" id="dynBlock" style="display:none;">
 <label>補充資訊</label>
@@ -263,11 +232,10 @@ button{
 
 <label>交叉比對</label>
 
-<select id="cross">
-<option value="">請選擇</option>
-<option value="YES">可以</option>
-<option value="NO">不可以</option>
-</select>
+<input id="cross" list="crossList" onchange="updateCrossUI()" placeholder="請選或輸入">
+<datalist id="crossList">
+<option value="YES"><option value="NO">
+</datalist>
 
 <div class="card" id="crossBlock" style="display:none;">
 <label>補充資訊</label>
@@ -519,7 +487,6 @@ console.log(e);
 updateRepUI();
 updateUpdUI();
 
-// SW
 if('serviceWorker' in navigator){
 navigator.serviceWorker.register('sw.js');
 }
