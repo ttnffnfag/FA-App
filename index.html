@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>售服回報系統</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1115">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="apple-touch-icon" href="icon.png">
+
+<style>
+body{
+    margin:0;
+    font-family:"Microsoft JhengHei";
+    background:#0f1115;
+    color:#e6e6e6;
+}
+
+.container{
+    max-width:720px;
+    margin:auto;
+    padding:15px;
+}
+
+h1{
+    text-align:center;
+    font-size:20px;
+    margin:10px 0 20px 0;
+}
+
+.card{
+    background:#1a1d24;
+    padding:12px;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+label{
+    font-size:12px;
+    color:#aaa;
+    display:block;
+    margin-bottom:6px;
+}
+
+input, select, textarea{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #333;
+    background:#0f1115;
+    color:#fff;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+textarea{min-height:70px;resize:vertical;}
+
+.row{display:flex;gap:10px;}
+
+.radio{display:flex;gap:20px;font-size:14px;}
+.radio input{width:auto;}
+
+.dt-wrap{display:flex;gap:8px;}
+
+.dt-btn{
+    width:52px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.dt-date{background:#3b82f6;color:white;}
+.dt-time{background:#22c55e;color:white;}
+
+button{
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border:none;
+    border-radius:12px;
+    font-size:16px;
+    font-weight:bold;
+}
+
+.btn1{background:#3b82f6;color:#fff;}
+.btn2{background:#22c55e;color:#fff;}
+.btn3{background:#6b7280;color:#fff;}
+
+.output{
+    white-space:pre-wrap;
+    background:#0b0d10;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #333;
+    margin-top:15px;
+    font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>售服異常回報</h1>
+
+<!-- 地點 -->
+<div class="card">
+<label>地點</label>
+<select id="location" onchange="toggleInput('location')">
+<option value="">請選擇</option>
+<option>中壢</option><option>龍潭</option><option>竹南</option>
+<option>台中</option><option>嘉義</option><option>台南</option><option>高雄</option>
+<option value="OTHER">其他</option>
+</select>
+<input id="locationOther" style="margin-top:8px;display:none;" placeholder="輸入地點">
+</div>
+
+<!-- 客戶 -->
+<div class="card">
+<label>客戶</label>
+<select id="customer" onchange="toggleInput('customer')">
+<option value="">請選擇</option>
+<option>台積電</option><option>日月光</option><option>矽品</option>
+<option>力成</option><option>美光</option><option>精材</option>
+<option value="OTHER">其他</option>
+</select>
+<input id="customerOther" style="margin-top:8px;display:none;" placeholder="輸入客戶">
+</div>
+
+<!-- 廠區 -->
+<div class="card">
+<label>廠區</label>
+<select id="factory" onchange="toggleInput('factory')">
+<option value="">請選擇</option>
+<option>A廠</option><option>B廠</option><option>C廠</option>
+<option value="OTHER">其他</option>
+</select>
+<input id="factoryOther" style="margin-top:8px;display:none;" placeholder="輸入廠區">
+</div>
+
+<!-- 機型 -->
+<div class="card">
+<label>機型</label>
+<select id="model" onchange="toggleInput('model')">
+<option value="">請選擇</option>
+<option>SC103</option><option>SC104</option><option>SC106</option>
+<option>SC106F</option><option>SC106FV</option><option>SC107</option>
+<option>SC201</option><option>SC202</option><option>SC4200</option>
+<option value="OTHER">其他</option>
+</select>
+<input id="modelOther" style="margin-top:8px;display:none;" placeholder="輸入機型">
+</div>
+
+<!-- 日期時間 -->
+<div class="row">
+
+<div class="card" style="flex:1">
+<label>日期</label>
+<div class="dt-wrap">
+<input type="date" id="date">
+<button class="dt-btn dt-date"
+onclick="document.getElementById('date').showPicker?.()">📅</button>
+</div>
+</div>
+
+<div class="card" style="flex:1">
+<label>時間</label>
+<div class="dt-wrap">
+<input type="time" id="time">
+<button class="dt-btn dt-time"
+onclick="document.getElementById('time').showPicker?.()">⏰</button>
+</div>
+</div>
+
+</div>
+
+<!-- 人員 -->
+<div class="card">
+<label>發現人員</label>
+<input id="person">
+</div>
+
+<!-- 異常 -->
+<div class="card">
+<label>異常原因</label>
+<select id="type">
+<option>硬體</option>
+<option>軟體</option>
+</select>
+</div>
+
+<div class="card">
+<label>異常簡述</label>
+<textarea id="desc"></textarea>
+</div>
+
+<!-- 再現 -->
+<div class="card">
+<label>是否再現</label>
+<div class="radio">
+<label><input type="radio" name="rep" value="是">是</label>
+<label><input type="radio" name="rep" value="否">否</label>
+</div>
+
+<br>
+
+<label>再現狀態</label>
+<select id="repType">
+<option>開機</option><option>運轉中</option><option>待機</option>
+<option>Recipe切換</option><option>上下料</option>
+<option>Alarm Reset後</option><option>長時間運轉</option>
+<option>其他</option>
+</select>
+
+<textarea id="repDetail"></textarea>
+</div>
+
+<!-- 歷史 -->
+<div class="card">
+<label>是否曾發生</label>
+<div class="radio">
+<label><input type="radio" name="his" value="是">是</label>
+<label><input type="radio" name="his" value="否">否</label>
+</div>
+
+<br>
+
+<label>多久前</label>
+<select id="hisTime">
+<option>1天內</option><option>1週內</option><option>1個月內</option>
+<option>3個月內</option><option>半年內</option><option>1年以上</option>
+</select>
+
+<label>次數</label>
+<select id="hisCount">
+<option>1次</option><option>2~5次</option>
+<option>5~10次</option><option>10次以上</option>
+</select>
+
+<textarea id="hisDetail"></textarea>
+</div>
+
+<!-- 更新 -->
+<div class="card">
+<label>是否重大更新</label>
+<div class="radio">
+<label><input type="radio" name="upd" value="是">是</label>
+<label><input type="radio" name="upd" value="否">否</label>
+</div>
+
+<br>
+
+<label>更新類型</label>
+<select id="updType">
+<option>PLC更新</option><option>PC軟體更新</option>
+<option>Recipe修改</option><option>參數修改</option>
+<option>Sensor更換</option><option>Valve更換</option>
+<option>機構修改</option><option>其他</option>
+</select>
+
+<label>交叉比對</label>
+<select id="cross">
+<option>可以</option><option>不可以</option><option>無同型機</option>
+</select>
+
+<textarea id="updDetail"></textarea>
+</div>
+
+<!-- 按鈕 -->
+<button class="btn1" onclick="gen()">產生</button>
+<button class="btn2" onclick="copy()">複製</button>
+<button class="btn3" onclick="location.reload()">清空</button>
+
+<pre class="output" id="out"></pre>
+
+</div>
+
+<script>
+
+function toggleInput(id){
+let s=document.getElementById(id);
+let i=document.getElementById(id+"Other");
+
+if(s.value==="OTHER"){
+i.style.display="block";
+}else{
+i.style.display="none";
+i.value="";
+}
+}
+
+function getValue(id){
+let s=document.getElementById(id);
+return s.value==="OTHER"
+?document.getElementById(id+"Other").value
+:s.value;
+}
+
+function getRadio(n){
+let r=document.getElementsByName(n);
+for(let i of r){
+if(i.checked) return i.value;
+}
+return "";
+}
+
+function gen(){
+
+let t=`
+=== 售服回報 ===
+
+地點:${getValue("location")}
+客戶:${getValue("customer")}
+廠區:${getValue("factory")}
+機型:${getValue("model")}
+
+時間:${date.value} ${time.value}
+人員:${person.value}
+
+原因:${type.value}
+描述:${desc.value}
+
+再現:${getRadio("rep")}
+狀態:${repType.value}
+${repDetail.value}
+
+歷史:${getRadio("his")}
+多久:${hisTime.value}
+次數:${hisCount.value}
+${hisDetail.value}
+
+更新:${getRadio("upd")}
+類型:${updType.value}
+交叉:${cross.value}
+${updDetail.value}
+`;
+
+out.innerText=t;
+}
+
+function copy(){
+navigator.clipboard.writeText(out.innerText);
+alert("已複製");
+}
+
+</script>
+
+<script>
+if('serviceWorker' in navigator){
+navigator.serviceWorker.register('sw.js');
+}
+</script>
+
+</body>
+</html>
