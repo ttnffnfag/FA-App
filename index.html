@@ -38,11 +38,10 @@ input,select,textarea{
     border:1px solid #333;
     background:#0f1115;
     color:#fff;
+    box-sizing:border-box;
 }
 
 textarea{min-height:70px;}
-
-.row{display:flex;gap:10px;}
 
 .radio{display:flex;gap:20px;}
 
@@ -64,6 +63,7 @@ button{
     background:#0b0d10;
     padding:15px;
     border-radius:12px;
+    margin-top:10px;
 }
 </style>
 </head>
@@ -117,6 +117,17 @@ button{
 </select>
 </div>
 
+<!-- 設備編號 -->
+<div class="card">
+<label>廠內設備編號</label>
+<input id="eqInternal" placeholder="可填 NA">
+</div>
+
+<div class="card">
+<label>客戶設備編號</label>
+<input id="eqCustomer" placeholder="可填 NA">
+</div>
+
 <!-- 日期時間 -->
 <div class="card">
 <label>日期</label>
@@ -130,8 +141,13 @@ button{
 
 <!-- 人員 -->
 <div class="card">
-<label>人員</label>
+<label>佳宸人員</label>
 <input id="person">
+</div>
+
+<div class="card">
+<label>客戶通報人員</label>
+<input id="reportPerson">
 </div>
 
 <!-- 異常 -->
@@ -153,11 +169,9 @@ button{
 <div class="card">
 <label>是否再現</label>
 <div class="radio">
-<label><input type="radio" name="rep" value="是">是</label>
-<label><input type="radio" name="rep" value="否">否</label>
+<label><input type="radio" name="rep" value="是" onclick="updateRepUI()">是</label>
+<label><input type="radio" name="rep" value="否" onclick="updateRepUI()">否</label>
 </div>
-
-<br>
 
 <label>再現狀態</label>
 <select id="repType">
@@ -224,7 +238,7 @@ button{
 
 <script>
 
-// ===== 必填檢查 =====
+// ===== 必填 =====
 function must(id,name){
   let el=document.getElementById(id);
   if(!el.value){
@@ -244,27 +258,64 @@ function mustRadio(name,label){
   return v.value;
 }
 
+function mustEither(id1,id2,label){
+  let v1=document.getElementById(id1).value.trim();
+  let v2=document.getElementById(id2).value.trim();
+
+  if(!v1 && !v2){
+    alert(label+"（廠內 / 客戶）至少要填一個");
+    return false;
+  }
+  return true;
+}
+
 function getValue(id){
   return document.getElementById(id).value;
 }
 
+// ===== 再現互鎖 =====
+function updateRepUI(){
+  let rep=document.querySelector('input[name="rep"]:checked')?.value;
+
+  let type=document.getElementById("repType");
+  let detail=document.getElementById("repDetail");
+
+  if(rep==="是"){
+    type.disabled=false;
+    detail.disabled=false;
+  }else{
+    type.value="";
+    detail.value="";
+    type.disabled=true;
+    detail.disabled=true;
+  }
+}
+
+updateRepUI();
+
+// ===== 產生 =====
 function gen(){
 
-// 必填
 if(!must("location","地點")) return;
 if(!must("customer","客戶")) return;
 if(!must("factory","廠區")) return;
 if(!must("model","機型")) return;
+
+// 設備編號
+if(!mustEither("eqInternal","eqCustomer","設備編號")) return;
+
 if(!must("date","日期")) return;
 if(!must("time","時間")) return;
-if(!must("person","人員")) return;
+
+if(!must("person","佳宸人員")) return;
+if(!must("reportPerson","客戶通報人員")) return;
+
 if(!must("type","異常原因")) return;
 if(!must("desc","異常簡述")) return;
 
 let rep=mustRadio("rep","是否再現");
 if(!rep) return;
 
-// 再現條件
 if(rep==="是"){
   if(!must("repType","再現狀態")) return;
   if(!must("repDetail","再現描述")) return;
@@ -291,8 +342,13 @@ let t=`
 廠區:${getValue("factory")}
 機型:${getValue("model")}
 
+廠內設備編號:${getValue("eqInternal") || "NA"}
+客戶設備編號:${getValue("eqCustomer") || "NA"}
+
 時間:${date.value} ${time.value}
-人員:${person.value}
+
+佳宸人員:${person.value}
+客戶通報人員:${reportPerson.value}
 
 原因:${type.value}
 描述:${desc.value}
@@ -312,9 +368,10 @@ ${hisDetail.value}
 ${updDetail.value}
 `;
 
-out.innerText=t;
+document.getElementById("out").innerText=t;
 }
 
+// ===== 複製 =====
 function copy(){
 navigator.clipboard.writeText(out.innerText);
 alert("已複製");
