@@ -1,4 +1,4 @@
-const CACHE_NAME = "fa-app-v2";
+const CACHE_NAME = "fa-app-auto-v1";
 
 const urlsToCache = [
   "./",
@@ -7,37 +7,27 @@ const urlsToCache = [
   "./icon.png"
 ];
 
-// 安裝時：寫入快取
+// 安裝：立即接管
 self.addEventListener("install", event => {
-  self.skipWaiting(); // 直接跳過等待
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(urlsToCache);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
 });
 
-// 啟用時：清掉舊版本快取（重點）
+// 啟用：刪舊 cache
 self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => caches.delete(k)))
+    )
   );
-  self.clients.claim(); // 立刻接管頁面
+  self.clients.claim();
 });
 
-// 攔截請求：優先用快取，沒有才抓網路
+// 網路優先（避免舊版）
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    })
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
