@@ -1,4 +1,4 @@
-const CACHE_NAME = "fa-report-v5";
+const CACHE_NAME = "fa-report-v6";
 
 self.addEventListener("install", e=>{
 self.skipWaiting();
