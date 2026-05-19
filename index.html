@@ -182,29 +182,6 @@ button{
 <textarea id="repDetail"></textarea>
 </div>
 
-<!-- 歷史 -->
-<div class="card">
-<label>是否曾發生</label>
-<div class="radio">
-<label><input type="radio" name="his" value="是">是</label>
-<label><input type="radio" name="his" value="否">否</label>
-</div>
-
-<label>多久前</label>
-<select id="hisTime">
-<option value="">請選擇</option>
-<option>1天內</option><option>1週內</option><option>1個月內</option>
-</select>
-
-<label>次數</label>
-<select id="hisCount">
-<option value="">請選擇</option>
-<option>1次</option><option>2~5次</option>
-</select>
-
-<textarea id="hisDetail"></textarea>
-</div>
-
 <!-- 更新 -->
 <div class="card">
 <label>是否重大更新</label>
@@ -214,10 +191,25 @@ button{
 </div>
 
 <label>更新類型</label>
-<select id="updType">
+<select id="updType" onchange="updateTypeUI()">
 <option value="">請選擇</option>
-<option>PLC更新</option><option>PC軟體更新</option>
+<option value="PLC">PLC</option>
+<option value="PC">PC軟體</option>
+<option value="RECIPE">Recipe</option>
+<option value="PARAM">參數</option>
+<option value="SENSOR">Sensor更換</option>
+<option value="VALVE">Valve更換</option>
+<option value="MECH">機構</option>
+<option value="PIPE">流體/管路</option>
+<option value="ELEC">電控</option>
+<option value="POWER">電氣元件</option>
+<option value="OTHER">其他</option>
 </select>
+
+<div class="card" id="dynBlock" style="display:none;">
+<label>補充資訊</label>
+<textarea id="dynText"></textarea>
+</div>
 
 <label>交叉比對</label>
 <select id="cross">
@@ -237,7 +229,6 @@ button{
 </div>
 
 <script>
-
 // ===== 必填 =====
 function must(id,name){
   let el=document.getElementById(id);
@@ -261,7 +252,6 @@ function mustRadio(name,label){
 function mustEither(id1,id2,label){
   let v1=document.getElementById(id1).value.trim();
   let v2=document.getElementById(id2).value.trim();
-
   if(!v1 && !v2){
     alert(label+"（廠內 / 客戶）至少要填一個");
     return false;
@@ -273,10 +263,9 @@ function getValue(id){
   return document.getElementById(id).value;
 }
 
-// ===== 再現互鎖 =====
+// ===== 再現鎖定 =====
 function updateRepUI(){
   let rep=document.querySelector('input[name="rep"]:checked')?.value;
-
   let type=document.getElementById("repType");
   let detail=document.getElementById("repDetail");
 
@@ -290,8 +279,21 @@ function updateRepUI(){
     detail.disabled=true;
   }
 }
-
 updateRepUI();
+
+// ===== 更新類型 UI =====
+function updateTypeUI(){
+let type=document.getElementById("updType").value;
+let block=document.getElementById("dynBlock");
+let text=document.getElementById("dynText");
+
+block.style.display="none";
+text.value="";
+
+if(type!==""){
+  block.style.display="block";
+}
+}
 
 // ===== 產生 =====
 function gen(){
@@ -301,7 +303,6 @@ if(!must("customer","客戶")) return;
 if(!must("factory","廠區")) return;
 if(!must("model","機型")) return;
 
-// 設備編號
 if(!mustEither("eqInternal","eqCustomer","設備編號")) return;
 
 if(!must("date","日期")) return;
@@ -314,8 +315,6 @@ if(!must("type","異常原因")) return;
 if(!must("desc","異常簡述")) return;
 
 let rep=mustRadio("rep","是否再現");
-if(!rep) return;
-
 if(rep==="是"){
   if(!must("repType","再現狀態")) return;
   if(!must("repDetail","再現描述")) return;
@@ -333,7 +332,6 @@ if(!upd) return;
 if(!must("updType","更新類型")) return;
 if(!must("cross","交叉比對")) return;
 
-// 產生
 let t=`
 === 售服回報 ===
 
@@ -342,13 +340,13 @@ let t=`
 廠區:${getValue("factory")}
 機型:${getValue("model")}
 
-廠內設備編號:${getValue("eqInternal") || "NA"}
-客戶設備編號:${getValue("eqCustomer") || "NA"}
+廠內:${eqInternal.value || "NA"}
+客戶:${eqCustomer.value || "NA"}
 
 時間:${date.value} ${time.value}
 
-佳宸人員:${person.value}
-客戶通報人員:${reportPerson.value}
+佳宸:${person.value}
+客戶:${reportPerson.value}
 
 原因:${type.value}
 描述:${desc.value}
@@ -360,10 +358,10 @@ ${rep==="是"?repDetail.value:""}
 歷史:${his}
 多久:${hisTime.value}
 次數:${hisCount.value}
-${hisDetail.value}
 
 更新:${upd}
 類型:${updType.value}
+補充:${dynText.value}
 交叉:${cross.value}
 ${updDetail.value}
 `;
@@ -377,9 +375,7 @@ navigator.clipboard.writeText(out.innerText);
 alert("已複製");
 }
 
-</script>
-
-<script>
+// ===== SW =====
 if('serviceWorker' in navigator){
 navigator.serviceWorker.register('sw.js');
 }
